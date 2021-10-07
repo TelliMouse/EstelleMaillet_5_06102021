@@ -17,19 +17,36 @@ const getProductIdFromUrl = async () => {
 const getWhichProductToShow = async (id) => {
 
     const productList = await retrieveProductList();
-    let productToShow;
-
+    
+    //Première façon
+    /*let productToShow;
     for(let product of productList) {
 
         const productId = product._id
 
-        if(productId === id) {
+        if(productId == id) {
 
             productToShow = product;
-        };
+        } else {
+
+            console.log('===');
+            console.log(productId, id);
+            console.log('===');
+        }
     };
 
-    return productToShow;
+    return productToShow;*/
+    
+    //Deuxième façon
+    let i=0;
+    
+    while(productList[i]["_id"] != id && i < productList.length) {
+
+        i++;
+    };
+    
+    console.log(productList[i]);
+    return productList[i];
 };
 
 const createProductImage = product => {
@@ -37,8 +54,10 @@ const createProductImage = product => {
     const imgPlace = document.querySelector('item__img');
 
     const productImg = document.createElement('img');
-    productImg.setAttribute('src', `${product.imageUrl}`);
-    productImg.setAttribute('alt', `${product.altTxt}`);
+    const imageUrl = product.imageUrl;
+    const altTxt = product.altTxt
+    productImg.setAttribute('src', `${imageUrl}`);
+    productImg.setAttribute('alt', `${altTxt}`);
 
     imgPlace.appendChild(productImg);
 

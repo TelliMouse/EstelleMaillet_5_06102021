@@ -1,6 +1,6 @@
-const retrieveProductList = () => fetch('http://localhost:3000/api/products')
+const retrieveProduct = (id) => fetch(`http://localhost:3000/api/products/${id}`)
 .then(res => res.json())
-.catch(err => console.log('Erreur retrieveProductList', err));
+.catch(err => console.log('Erreur retrieveProduct', err));
 
 
 const getProductIdFromUrl = async () => {
@@ -14,12 +14,12 @@ const getProductIdFromUrl = async () => {
 };
 
 
-const getWhichProductToShow = async (id) => {
+/*const getWhichProductToShow = async (id) => {
 
-    const productList = await retrieveProductList();
+    return await retrieveProduct(id);
     
     //Première façon
-    /*let productToShow;
+    let productToShow;
     for(let product of productList) {
 
         const productId = product._id
@@ -35,7 +35,7 @@ const getWhichProductToShow = async (id) => {
         }
     };
 
-    return productToShow;*/
+    return productToShow;
     
     //Deuxième façon
     let i=0;
@@ -47,7 +47,7 @@ const getWhichProductToShow = async (id) => {
     
     console.log(productList[i]);
     return productList[i];
-};
+} */
 
 const createProductImage = product => {
 
@@ -135,8 +135,8 @@ const createProductInfo = product => {
 
 const main = async () => {
 
-    const productId = getProductIdFromUrl();
-    const product = await getWhichProductToShow(productId);
+    const productId = await getProductIdFromUrl();
+    const product = await retrieveProduct(productId);
 
     createProductInfo(product);
 };

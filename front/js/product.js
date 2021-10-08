@@ -220,7 +220,7 @@ const putProductInCart = async () => {
         };
     } else {
 
-        console.log('Please choose a color and a quantity.');
+        alert('Please choose a color and a quantity.');
     };
 };
 

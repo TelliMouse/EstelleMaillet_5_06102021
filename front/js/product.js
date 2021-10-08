@@ -14,46 +14,11 @@ const getProductIdFromUrl = async () => {
 };
 
 
-/*const getWhichProductToShow = async (id) => {
-
-    return await retrieveProduct(id);
-    
-    //Première façon
-    let productToShow;
-    for(let product of productList) {
-
-        const productId = product._id
-
-        if(productId == id) {
-
-            productToShow = product;
-        } else {
-
-            console.log('===');
-            console.log(productId, id);
-            console.log('===');
-        }
-    };
-
-    return productToShow;
-    
-    //Deuxième façon
-    let i=0;
-    
-    while(productList[i]["_id"] != id && i < productList.length) {
-
-        i++;
-    };
-    
-    console.log(productList[i]);
-    return productList[i];
-} */
-
 const createProductImage = product => {
 
-    const imgPlace = document.querySelector('item__img');
+    const imgPlace = document.querySelector(".item__img");
 
-    const productImg = document.createElement('img');
+    const productImg = document.createElement("img");
     const imageUrl = product.imageUrl;
     const altTxt = product.altTxt
     productImg.setAttribute('src', `${imageUrl}`);

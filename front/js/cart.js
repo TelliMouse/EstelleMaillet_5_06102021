@@ -68,7 +68,7 @@ const createContentSettings = () => {
 };
 
 
-const retrieveQuantityFromId = id => {
+/* const retrieveQuantityFromId = rank => {
 
     for(let i=0; i<localStorage.length; i++) {
 
@@ -81,10 +81,10 @@ const retrieveQuantityFromId = id => {
             return product.quantity;
         };
     };
-};
+}; */
 
 
-const createContentSettingsQuantity = product => {
+const createContentSettingsQuantity = rank => {
 
     const contentSettingsQuantity = document.createElement("div");
     contentSettingsQuantity.classList.add("cart__item__content__settings__quantity");
@@ -99,7 +99,8 @@ const createContentSettingsQuantity = product => {
     quantityInput.setAttribute("min", "1");
     quantityInput.setAttribute("max", "100");
 
-    const productQuantity = retrieveQuantityFromId(product._id);
+    const productStorage = JSON.parse(localStorage.getItem(`Product${rank}`))
+    const productQuantity = productStorage.quantity;
 
     quantityInput.setAttribute("value", `${productQuantity}`);
 
@@ -125,7 +126,7 @@ const createContentSettingsDelete = () => {
 };
 
 
-const createProductInfo = product => {
+const createProductInfo = (product, rank) => {
 
     const cartItemPlace = document.getElementById("cart__items");
     const productCard = createProductCard(product);
@@ -133,7 +134,7 @@ const createProductInfo = product => {
     const itemContent = createItemContent();
     const titlePrice = createProductTitlePrice(product);
     const contentSettings = createContentSettings();
-    const contentSettingsQuantity = createContentSettingsQuantity(product);
+    const contentSettingsQuantity = createContentSettingsQuantity(rank);
     const contentSettingsDelete = createContentSettingsDelete();
 
     cartItemPlace.appendChild(productCard);
@@ -154,7 +155,7 @@ const main = async () => {
         const productStorage = JSON.parse(localStorage.getItem(`Product${productRank}`));
         const product = await retrieveProduct(productStorage.id);
 
-        createProductInfo(product);
+        createProductInfo(product, productRank);
     } 
 };
 

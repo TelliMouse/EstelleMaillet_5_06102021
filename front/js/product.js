@@ -105,11 +105,11 @@ let productColor;
 let productQuantity;
 
 
-const getCurrentProduct = () => {
+const getCurrentProduct = async () => {
 
     let currentProduct = {
 
-        name: document.getElementById('title').innerText,
+        id: await getProductIdFromUrl(),
         color: productColor,
         quantity: productQuantity
     };
@@ -118,11 +118,11 @@ const getCurrentProduct = () => {
 };
 
 
-const isTheProductComplete = () => {
+const isTheProductComplete = async () => {
 
-    const product = getCurrentProduct();
+    const product = await getCurrentProduct();
 
-    if(product.name && product.color && product.quantity !== 0) {
+    if(product.id && product.color && product.quantity !== 0) {
 
         return true;
 
@@ -141,7 +141,7 @@ const findTheRankOfTheProductInStorage = product => {
         const productInStorage = localStorage.getItem(`Product${productRank}`);
         const productInStorageJson = JSON.parse(productInStorage);
 
-        if(product.name == productInStorageJson.name && product.color == productInStorageJson.color) {
+        if(product.id == productInStorageJson.id && product.color == productInStorageJson.color) {
             
             return productRank;
         };
@@ -204,11 +204,11 @@ const addNewProductToCart = product => {
 };
 
 
-const putProductInCart = () => {
+const putProductInCart = async () => {
 
-    const product = getCurrentProduct();
+    const product = await getCurrentProduct();
 
-    if(isTheProductComplete()) {
+    if(await isTheProductComplete()) {
 
         if(isTheProductAlreadyInTheCartAndWhatIsTheRank(product)) {
 

@@ -565,6 +565,8 @@ const addEventListenerToOrderButton = /*async*/ () => {
 
         if(verifyIfFormIsCorrect() && !isProductListEmpty()) {
 
+            e.preventDefault();
+            
             const contactUser = verifyIfFormIsCorrect();
             const productList = createProductList();
             //const resultFetch = await sendOrderData(contactUser, productList);
@@ -573,8 +575,7 @@ const addEventListenerToOrderButton = /*async*/ () => {
 
             localStorage.clear();
             //window.location.href = `../html/confirmation.html?id=${orderNumber}`;
-            const url = new URL(`http://localhost:5500/html/confirmation.html?id=${mockedOrderNumber}`)
-            window.location.href = url;
+            window.location.href = `../html/confirmation.html?id=${mockedOrderNumber}`;
 
         } else {
 

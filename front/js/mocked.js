@@ -27,7 +27,7 @@ const mockedProductList = () => {
 
 const productList = mockedProductList();
 
-const sendMockedData = () => fetch("http://localhost:3000/api/order", {
+/*const sendMockedData = () => fetch("http://localhost:3000/api/order", {
     method: 'POST',
 	headers: { 
 'Accept': 'application/json', 
@@ -37,6 +37,24 @@ const sendMockedData = () => fetch("http://localhost:3000/api/order", {
         contact: mockedUser,
         products: productList
     }
+})
+.then(res => localStorage.setItem("resultFetch", JSON.stringify(res.json()))); */
+
+
+
+const sendMockedData = () => fetch("http://localhost:3000/api/order", {
+    method: "POST",
+
+   body: {
+        contact: mockedUser,
+        products: productList
+    },
+   headers: { 
+       'Accept': 'application/json',
+       "content-Type": "application/json",
+       "Access-Control-Allow-Origin": "*"
+   },
+	
 })
 .then(res => localStorage.setItem("resultFetch", JSON.stringify(res.json())));
 

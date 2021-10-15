@@ -169,8 +169,6 @@ const displayTotalPrice = async () => {
 
 const createProductInfo = async () => {
 
-    console.log("début createProductInfo");
-
     for(let i = 0; i < localStorage.length; i++) {
 
         const rank = i + 1;
@@ -299,85 +297,74 @@ const addEventListenerToDeleteButton = () => {
 //_________________________________________________________________________________
 
 
-/*regex prénom: /^[A-Z][a-zA-Z '-]* / 
-régex nom: /^[A-Z][a-zA-Z '-]* /
-regex adresse: /^[0-9]*[a-zA-Z0-9 ,.'-]+/
-regex ville: /^[A-Z][a-zA-Z '-]* /
-regex email: /^.+@.+\..+/  */
+const sendOrderData = (contact, productList) => fetch("http://localhost:3000/api/order", {
+    method: 'POST',
+	headers: { 
+        "Accept": "application/json", 
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*"
+    },
+	body: {
+        contact: contact,
+        products: productList
+    }
+})
+.then(res => res.json())
+.catch(err => console.log("Erreur sendOrderData", err));
 
 
-/* const isFirstNameCorrect = firstName => {
+/* caractères spéciaux france MAJ: ÀÂÆÇÉÈÊËÎÏÔŒÙÛÜŸ
+caratctères spéciaux france min: àâæçéèêëîïôœùûüÿ
+regex prénom: /^[A-Z][a-zA-Z '-]*$/ 
+régex nom: /^[A-Z][a-zA-Z '-]*$/
+regex adresse: /^[0-9]*[a-zA-Z0-9 ,.'-]+$/
+regex ville: /^[A-Z][a-zA-Z '-]+$/
+regex email: /^.+@.+\.[a-z]+$/  */
 
-    const regex = /^[A-Z][a-zA-Z '-] *  /;
+let userFirstName;
+let userLastName;
+let userAddress;
+let userCity;
+let userEmail;
 
-    if(regex.test(firstName)) {
 
-        return true;
+const isFirstNameCorrect = firstName => {
 
-    } else {
+    const regex = /^[A-ZÀÂÆÇÉÈÊËÎÏÔŒÙÛÜŸ][a-zA-ZàâæçéèêëîïôœùûüÿÀÂÆÇÉÈÊËÎÏÔŒÙÛÜŸ '-]*$/;
 
-        return false;
-    };
+    return regex.test(firstName);
 };
 
 
 const isLastNameCorrect = lastName => {
 
-    const regex = /^[A-Z][a-zA-Z '-]*  /;
+    const regex = /^[A-ZÀÂÆÇÉÈÊËÎÏÔŒÙÛÜŸ][a-zA-ZàâæçéèêëîïôœùûüÿÀÂÆÇÉÈÊËÎÏÔŒÙÛÜŸ '-]*$/;
 
-    if(regex.test(lastName)) {
-
-        return true;
-
-    } else {
-
-        return false;
-    };
+    return regex.test(lastName);
 };
 
 
 const isAddressCorrect = address => {
 
-    const regex = /^[0-9]*[a-zA-Z0-9 ,.'-]+/;
+    const regex = /^[0-9]*[a-zA-Z0-9àâæçéèêëîïôœùûüÿÀÂÆÇÉÈÊËÎÏÔŒÙÛÜŸ ,.'-]+$/;
 
-    if(regex.test(address)) {
-
-        return true;
-
-    } else {
-
-        return false;
-    };
+    return regex.test(address);
 };
 
 
 const isCityCorrect = city => {
 
-    const regex = /^[A-Z][a-zA-Z '-]*  /;
+    const regex = /^[A-Z][a-zA-ZàâæçéèêëîïôœùûüÿÀÂÆÇÉÈÊËÎÏÔŒÙÛÜŸ '-]+$/;
 
-    if(regex.test(city)) {
-
-        return true;
-
-    } else {
-
-        return false;
-    };
+    return regex.test(city);
 };
 
 
 const isEmailCorrect = email => {
 
-    const regex = /^.+@.+\..+/;
+    const regex = /^.+@.+\.[a-z]+$/;
 
-    if(regex.test(email)) {
-
-        return true;
-
-    } else {
-
-        return false;
-    };
+    return regex.test(email);
 };
 
 
@@ -385,20 +372,20 @@ const verifyIfFirstNameIsCorrect = () => {
 
     const firstNamePlace = document.getElementById("firstName");
 
-    firstNamePlace.addEventListener("change", function(e) {
+    firstNamePlace.addEventListener("input", function(e) {
 
-        const firstName = e.target.value;
+        const input = e.target.value;
         const errorMessageFirstNamePlace = document.getElementById("firstNameErrorMsg");
+        
 
-        if(isFirstNameCorrect(firstName)) {
+        if(isFirstNameCorrect(input)) {
 
             errorMessageFirstNamePlace.innerText = "";
-            return firstName;
+            userFirstName = input;
 
         } else {
 
-            errorMessageFirstNamePlace.innerText = "Entrez un prénom commançant par une majuscule et ne comprenant ni accents ni caractères spéciaux";
-            return false;
+            errorMessageFirstNamePlace.innerText = "Entrez un prénom commançant par une majuscule.";
         };
     });
 };
@@ -408,20 +395,19 @@ const verifyIfLastNameIsCorrect = () => {
 
     const lastNamePlace = document.getElementById("lastName");
 
-    lastNamePlace.addEventListener("change", function(e) {
+    lastNamePlace.addEventListener("input", function(e) {
 
-        const lastName = e.target.value;
+        const input = e.target.value;
         const errorMessageLastNamePlace = document.getElementById("lastNameErrorMsg");
 
-        if(isLastNameCorrect(lastName)) {
+        if(isLastNameCorrect(input)) {
 
             errorMessageLastNamePlace.innerText = "";
-            return lastName;
+            userLastName = input;
 
         } else {
 
-            errorMessageLastNamePlace.innerText = "Entrez un nom commançant par une majuscule et ne comprenant ni accents ni caractères spéciaux";
-            return false;
+            errorMessageLastNamePlace.innerText = "Entrez un nom commançant par une majuscule.";
         };
     });
 };
@@ -431,20 +417,19 @@ const verifyIfAddressIsCorrect = () => {
 
     const addressPlace = document.getElementById("address");
 
-    addressPlace.addEventListener("change", function(e) {
+    addressPlace.addEventListener("input", function(e) {
 
-        const address = e.target.value;
+        const input = e.target.value;
         const errorMessageAddressPlace = document.getElementById("addressErrorMsg");
 
-        if(isAddressCorrect(address)) {
+        if(isAddressCorrect(input)) {
 
             errorMessageAddressPlace.innerText = "";
-            return address;
+            userAddress = input;
 
         } else {
 
-            errorMessageAddressPlace.innerText = "Entrez une adresse ne comprenant ni accents ni caractères spéciaux";
-            return false;
+            errorMessageAddressPlace.innerText = "Entrez une adresse.";
         };
     });
 };
@@ -454,20 +439,19 @@ const verifyIfCityIsCorrect = () => {
 
     const cityPlace = document.getElementById("city");
 
-    cityPlace.addEventListener("change", function(e) {
+    cityPlace.addEventListener("input", function(e) {
 
-        const city = e.target.value;
+        const input = e.target.value;
         const errorMessageCityPlace = document.getElementById("cityErrorMsg");
 
-        if(isCityCorrect(city)) {
+        if(isCityCorrect(input)) {
 
             errorMessageCityPlace.innerText = "";
-            return city;
+            userCity = input;
 
         } else {
 
-            errorMessageCityPlace.innerText = "Entrez le nom d'une ville commançant par une majuscule et ne comprenant ni accents ni caractères spéciaux";
-            return false;
+            errorMessageCityPlace.innerText = "Entrez le nom d'une ville commançant par une majuscule.";
         };
     });
 };
@@ -477,65 +461,137 @@ const verifyIfEmailIsCorrect = () => {
 
     const emailPlace = document.getElementById("email");
 
-    emailPlace.addEventListener("change", function(e) {
+    emailPlace.addEventListener("input", function(e) {
 
-        const email = e.target.value;
+        const input = e.target.value;
         const errorMessageEmailPlace = document.getElementById("emailErrorMsg");
 
-        if(isEmailCorrect(email)) {
+        if(isEmailCorrect(input)) {
 
             errorMessageEmailPlace.innerText = "";
-            return email;
+            userEmail = input;
 
         } else {
 
             errorMessageEmailPlace.innerText = "Entrez une adresse email valide";
-            return false;
-        }
+        };
     });
+};
+
+
+const addEventListenerToFormFields = () => {
+
+    verifyIfFirstNameIsCorrect();
+    verifyIfLastNameIsCorrect();
+    verifyIfAddressIsCorrect();
+    verifyIfCityIsCorrect();
+    verifyIfEmailIsCorrect();
 };
 
 
 const verifyIfFormIsCorrect = () => {
 
-    const firstName = verifyIfFirstNameIsCorrect();
-    const lastName = verifyIfLastNameIsCorrect();
-    const address = verifyIfAddressIsCorrect();
-    const city = verifyIfCityIsCorrect();
-    const email = verifyIfEmailIsCorrect();
-
-    if(firstName && lastName && address && city && email) {
+    if(userFirstName && userLastName && userAddress && userCity && userEmail) {
 
         return {
-            firstName : firstName,
-            lastName: lastName,
-            address: address,
-            city: city,
-            email: email
+            firstName : userFirstName,
+            lastName: userLastName,
+            address: userAddress,
+            city: userCity,
+            email: userEmail
         };
     };
 };
 
 
-const addEventListenerToOrderButton = () => {
+const isProductAlreadyInList = (productId, list) => {
 
-    if(verifyIfFormIsCorrect()) {
+    if(list.length != 0) {
 
-        //POST
+        for(let i = 0; i < list.length; i++) {
+
+            if(productId == list[i]) {
+
+                return true;
+            };
+        };
+    } else {
+
+        return false;
+    };
+};
+
+
+const createProductList = () => {
+
+    let productList = [];
+
+    for(i = 0; i < localStorage.length; i++) {
+
+        const rank = i + 1;
+        const product = retrieveProductStorage(rank);
+        const productQuantity = product.quantity;
+        const productId = product.id;
+
+        if(!isProductAlreadyInList(productId, productList) && productQuantity != 0) {
+
+            productList.push(productId);
+        };   
+    };
+
+    return productList;
+};
+
+const isProductListEmpty = () => {
+
+    const productList = createProductList();
+
+    if(productList.length === 0) {
+
+        return true;
 
     } else {
 
-        alert("Veuillez remplir tous les champs du formulaire correctement");
+        return false;
     }
-} */
+}
+
+
+const addEventListenerToOrderButton = /*async*/ () => {
+
+    const orderButton = document.getElementById("order");
+
+    orderButton.addEventListener("click", function(e) {
+
+        if(verifyIfFormIsCorrect() && !isProductListEmpty()) {
+
+            const contactUser = verifyIfFormIsCorrect();
+            const productList = createProductList();
+            //const resultFetch = await sendOrderData(contactUser, productList);
+            //const orderNumber = resultFetch.id;
+            const mockedOrderNumber = "123";
+
+            localStorage.clear();
+            //window.location.href = `../html/confirmation.html?id=${orderNumber}`;
+            const url = new URL(`http://localhost:5500/html/confirmation.html?id=${mockedOrderNumber}`)
+            window.location.href = url;
+
+        } else {
+
+            e.preventDefault();
+            alert("Veuillez remplir tous les champs du formulaire correctement et avoir ajouté des produits au panier.");
+        };
+    });
+};
 
 
 const main = async () => {
 
-    console.log("début main");
     await createProductInfo();
     addEventListenerToQuantityInput();
     addEventListenerToDeleteButton();
+    addEventListenerToFormFields();
+    /*await*/ addEventListenerToOrderButton();
 };
 
 main();

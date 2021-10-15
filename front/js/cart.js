@@ -169,6 +169,8 @@ const displayTotalPrice = async () => {
 
 const createProductInfo = async () => {
 
+    console.log("début createProductInfo");
+
     for(let i = 0; i < localStorage.length; i++) {
 
         const rank = i + 1;
@@ -294,8 +296,243 @@ const addEventListenerToDeleteButton = () => {
 };
 
 
+//_________________________________________________________________________________
+
+
+/*regex prénom: /^[A-Z][a-zA-Z '-]* / 
+régex nom: /^[A-Z][a-zA-Z '-]* /
+regex adresse: /^[0-9]*[a-zA-Z0-9 ,.'-]+/
+regex ville: /^[A-Z][a-zA-Z '-]* /
+regex email: /^.+@.+\..+/  */
+
+
+/* const isFirstNameCorrect = firstName => {
+
+    const regex = /^[A-Z][a-zA-Z '-] *  /;
+
+    if(regex.test(firstName)) {
+
+        return true;
+
+    } else {
+
+        return false;
+    };
+};
+
+
+const isLastNameCorrect = lastName => {
+
+    const regex = /^[A-Z][a-zA-Z '-]*  /;
+
+    if(regex.test(lastName)) {
+
+        return true;
+
+    } else {
+
+        return false;
+    };
+};
+
+
+const isAddressCorrect = address => {
+
+    const regex = /^[0-9]*[a-zA-Z0-9 ,.'-]+/;
+
+    if(regex.test(address)) {
+
+        return true;
+
+    } else {
+
+        return false;
+    };
+};
+
+
+const isCityCorrect = city => {
+
+    const regex = /^[A-Z][a-zA-Z '-]*  /;
+
+    if(regex.test(city)) {
+
+        return true;
+
+    } else {
+
+        return false;
+    };
+};
+
+
+const isEmailCorrect = email => {
+
+    const regex = /^.+@.+\..+/;
+
+    if(regex.test(email)) {
+
+        return true;
+
+    } else {
+
+        return false;
+    };
+};
+
+
+const verifyIfFirstNameIsCorrect = () => {
+
+    const firstNamePlace = document.getElementById("firstName");
+
+    firstNamePlace.addEventListener("change", function(e) {
+
+        const firstName = e.target.value;
+        const errorMessageFirstNamePlace = document.getElementById("firstNameErrorMsg");
+
+        if(isFirstNameCorrect(firstName)) {
+
+            errorMessageFirstNamePlace.innerText = "";
+            return firstName;
+
+        } else {
+
+            errorMessageFirstNamePlace.innerText = "Entrez un prénom commançant par une majuscule et ne comprenant ni accents ni caractères spéciaux";
+            return false;
+        };
+    });
+};
+
+
+const verifyIfLastNameIsCorrect = () => {
+
+    const lastNamePlace = document.getElementById("lastName");
+
+    lastNamePlace.addEventListener("change", function(e) {
+
+        const lastName = e.target.value;
+        const errorMessageLastNamePlace = document.getElementById("lastNameErrorMsg");
+
+        if(isLastNameCorrect(lastName)) {
+
+            errorMessageLastNamePlace.innerText = "";
+            return lastName;
+
+        } else {
+
+            errorMessageLastNamePlace.innerText = "Entrez un nom commançant par une majuscule et ne comprenant ni accents ni caractères spéciaux";
+            return false;
+        };
+    });
+};
+
+
+const verifyIfAddressIsCorrect = () => {
+
+    const addressPlace = document.getElementById("address");
+
+    addressPlace.addEventListener("change", function(e) {
+
+        const address = e.target.value;
+        const errorMessageAddressPlace = document.getElementById("addressErrorMsg");
+
+        if(isAddressCorrect(address)) {
+
+            errorMessageAddressPlace.innerText = "";
+            return address;
+
+        } else {
+
+            errorMessageAddressPlace.innerText = "Entrez une adresse ne comprenant ni accents ni caractères spéciaux";
+            return false;
+        };
+    });
+};
+
+
+const verifyIfCityIsCorrect = () => {
+
+    const cityPlace = document.getElementById("city");
+
+    cityPlace.addEventListener("change", function(e) {
+
+        const city = e.target.value;
+        const errorMessageCityPlace = document.getElementById("cityErrorMsg");
+
+        if(isCityCorrect(city)) {
+
+            errorMessageCityPlace.innerText = "";
+            return city;
+
+        } else {
+
+            errorMessageCityPlace.innerText = "Entrez le nom d'une ville commançant par une majuscule et ne comprenant ni accents ni caractères spéciaux";
+            return false;
+        };
+    });
+};
+
+
+const verifyIfEmailIsCorrect = () => {
+
+    const emailPlace = document.getElementById("email");
+
+    emailPlace.addEventListener("change", function(e) {
+
+        const email = e.target.value;
+        const errorMessageEmailPlace = document.getElementById("emailErrorMsg");
+
+        if(isEmailCorrect(email)) {
+
+            errorMessageEmailPlace.innerText = "";
+            return email;
+
+        } else {
+
+            errorMessageEmailPlace.innerText = "Entrez une adresse email valide";
+            return false;
+        }
+    });
+};
+
+
+const verifyIfFormIsCorrect = () => {
+
+    const firstName = verifyIfFirstNameIsCorrect();
+    const lastName = verifyIfLastNameIsCorrect();
+    const address = verifyIfAddressIsCorrect();
+    const city = verifyIfCityIsCorrect();
+    const email = verifyIfEmailIsCorrect();
+
+    if(firstName && lastName && address && city && email) {
+
+        return {
+            firstName : firstName,
+            lastName: lastName,
+            address: address,
+            city: city,
+            email: email
+        };
+    };
+};
+
+
+const addEventListenerToOrderButton = () => {
+
+    if(verifyIfFormIsCorrect()) {
+
+        //POST
+
+    } else {
+
+        alert("Veuillez remplir tous les champs du formulaire correctement");
+    }
+} */
+
+
 const main = async () => {
 
+    console.log("début main");
     await createProductInfo();
     addEventListenerToQuantityInput();
     addEventListenerToDeleteButton();

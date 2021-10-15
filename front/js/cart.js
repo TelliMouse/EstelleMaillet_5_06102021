@@ -585,13 +585,36 @@ const addEventListenerToOrderButton = /*async*/ () => {
 };
 
 
+//_______________________________________________________________________________________________________
+
+
+const showOrderId = () => {
+
+    const orderIdPlace = document.getElementById("orderId");
+    const currentUrl = window.location.href;
+    const url = new URL(currentUrl);
+    const orderId = url.searchParams.get("id");
+
+    orderIdPlace.innerText = orderId;
+};
+
+
 const main = async () => {
 
-    await createProductInfo();
-    addEventListenerToQuantityInput();
-    addEventListenerToDeleteButton();
-    addEventListenerToFormFields();
-    /*await*/ addEventListenerToOrderButton();
+    const currentUrl = window.location.href;
+
+    if(/cart.html/.test(currentUrl)) {
+
+        await createProductInfo();
+        addEventListenerToQuantityInput();
+        addEventListenerToDeleteButton();
+        addEventListenerToFormFields();
+        /*await*/ addEventListenerToOrderButton();
+
+    } else {
+
+        showOrderId();
+    };
 };
 
 main();

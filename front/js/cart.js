@@ -297,29 +297,17 @@ const addEventListenerToDeleteButton = () => {
 //_________________________________________________________________________________
 
 
-const sendOrderData = (contact, productList) => fetch("http://localhost:3000/api/order", {
+const sendOrderData = order => fetch("http://localhost:3000/api/products/order", {
     method: 'POST',
 	headers: { 
         "Accept": "application/json", 
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*"
+        "Content-Type": "application/json"
     },
-	body: {
-        contact: contact,
-        products: productList
-    }
+	body: JSON.stringify(order)
 })
 .then(res => res.json())
 .catch(err => console.log("Erreur sendOrderData", err));
 
-
-/* caractères spéciaux france MAJ: ÀÂÆÇÉÈÊËÎÏÔŒÙÛÜŸ
-caratctères spéciaux france min: àâæçéèêëîïôœùûüÿ
-regex prénom: /^[A-Z][a-zA-Z '-]*$/ 
-régex nom: /^[A-Z][a-zA-Z '-]*$/
-regex adresse: /^[0-9]*[a-zA-Z0-9 ,.'-]+$/
-regex ville: /^[A-Z][a-zA-Z '-]+$/
-regex email: /^.+@.+\.[a-z]+$/  */
 
 let userFirstName;
 let userLastName;
@@ -542,6 +530,7 @@ const createProductList = () => {
     return productList;
 };
 
+
 const isProductListEmpty = () => {
 
     const productList = createProductList();
@@ -554,28 +543,31 @@ const isProductListEmpty = () => {
 
         return false;
     }
-}
+};
 
 
-const addEventListenerToOrderButton = /*async*/ () => {
+const addEventListenerToOrderButton = () => {
 
     const orderButton = document.getElementById("order");
 
-    orderButton.addEventListener("click", function(e) {
+    orderButton.addEventListener("click", async (e) => {
 
-        if(verifyIfFormIsCorrect() && !isProductListEmpty()) {
+        if (verifyIfFormIsCorrect() && !isProductListEmpty()) {
 
             e.preventDefault();
-            
+
             const contactUser = verifyIfFormIsCorrect();
             const productList = createProductList();
-            //const resultFetch = await sendOrderData(contactUser, productList);
-            //const orderNumber = resultFetch.id;
-            const mockedOrderNumber = "123";
+            const order = {
+                contact: contactUser,
+                products: productList
+            };
+
+            const resultFetch = await sendOrderData(order);
+            const orderId = resultFetch.orderId;
 
             localStorage.clear();
-            //window.location.href = `../html/confirmation.html?id=${orderNumber}`;
-            window.location.href = `../html/confirmation.html?id=${mockedOrderNumber}`;
+            window.location.href = `../html/confirmation.html?id=${orderId}`;
 
         } else {
 
@@ -610,7 +602,7 @@ const main = async () => {
         addEventListenerToQuantityInput();
         addEventListenerToDeleteButton();
         addEventListenerToFormFields();
-        /*await*/ addEventListenerToOrderButton();
+        addEventListenerToOrderButton();
 
     } else {
 

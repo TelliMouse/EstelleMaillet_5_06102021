@@ -1,8 +1,16 @@
+/**
+ * Retrieve the product list from the API
+ * @return {json} -list of products-
+ */
 const retrieveProductList = () => fetch('http://localhost:3000/api/products')
 .then(res => res.json())
 .catch(err => console.log('Erreur retrieveProductList', err));
 
-
+/**
+ * Inject HTML link <a> that directs towards the desired product page
+ * @param {object} product 
+ * @returns {HTMLElement} productLink
+ */
 const createProductLink = product => {
 
     const productLink = document.createElement('a');
@@ -11,7 +19,11 @@ const createProductLink = product => {
     return productLink;
 };
 
-
+/**
+ * Inject HTML image <img> with source and alternative text from the object product
+ * @param {object} product 
+ * @returns {HTMLElement} productImage
+ */
 const createProductImage = product => {
 
     const productImage = document.createElement('img');
@@ -21,7 +33,11 @@ const createProductImage = product => {
     return productImage;
 };
 
-
+/**
+ * Inject HTML title <h3> with the name of the product
+ * @param {object} product 
+ * @returns {HTMLElement} productName
+ */
 const createProductName = product => {
 
     const productName = document.createElement('h3');
@@ -31,7 +47,11 @@ const createProductName = product => {
     return productName;
 };
 
-
+/**
+ * Inject HTML paragraph <p> with product description
+ * @param {object} product 
+ * @returns {HTMLElement} productDescription
+ */
 const createProductDescription = product => {
 
     const productDescription = document.createElement('p');
@@ -41,7 +61,11 @@ const createProductDescription = product => {
     return productDescription;
 };
 
-
+/**
+ * Create every HTML elements needed for displaying each product card by using last functions and append them to the right place in the DOM
+ * @param {object} product 
+ * @returns {HTMLElement} productPlace
+ */
 const createProductCard = product => {
 
     const productPlace = document.getElementById('items');
@@ -63,7 +87,9 @@ const createProductCard = product => {
     return productPlace;
 };
 
-
+/**
+ * Main function of the page that executes the creation and displaying of product card for each product in the product list
+ */
 const main = async () => {
     const productList = await retrieveProductList();
 

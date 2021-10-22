@@ -1,19 +1,27 @@
-const retrieveProductListApi = () => fetch("http://localhost:3000/api/products")
-.then(res => res.json())
-.catch(err => console.log("Erreur retrieveProductListApi", err));
-
-
+/**
+ * Retrieve the object from the API with the product ID
+ * @param {String} id 
+ * @returns {Json} -object-
+ */
 const retrieveProductApi = id => fetch(`http://localhost:3000/api/products/${id}`)
 .then(res => res.json())
 .catch(err => console.log('Erreur retrieveProductApi', err));
 
-
+/**
+ * Retrieve an object from localStorage and return it as a JSON object
+ * @param {Integer} rank 
+ * @returns {Json} -object-
+ */
 const retrieveProductStorage = rank => {
 
     return JSON.parse(localStorage.getItem(`Product${rank}`));
 };
 
-
+/**
+ * Inject HTML article <article> with the product id as value for attribute "data-id"
+ * @param {object} product 
+ * @returns {HTMLElement} productCard
+ */
 const createProductCard = product => {
 
     const productCard = document.createElement("article");
@@ -23,7 +31,11 @@ const createProductCard = product => {
     return productCard;
 };
 
-
+/**
+ * Inject HTML division <div> and append image <img> with image url and alternative text from the object "product" to it
+ * @param {Object} product 
+ * @returns {HTMLElement} imagePlace
+ */
 const createProductImg = product => {
 
     const imagePlace = document.createElement("div");
@@ -38,7 +50,10 @@ const createProductImg = product => {
     return imagePlace;
 };
 
-
+/**
+ * Inject HTML division <div>
+ * @returns {HTMLElement} itemContent
+ */
 const createItemContent = () => {
 
     const itemContent = document.createElement("div");
@@ -47,7 +62,11 @@ const createItemContent = () => {
     return itemContent;
 };
 
-
+/**
+ * Inject HTML title <h2> and paragraph <p> with product name and product price
+ * @param {Object} product 
+ * @returns {HTMLElement} titlePricePlace
+ */
 const createProductTitlePrice = product => {
 
     const titlePricePlace = document.createElement("div");
@@ -65,7 +84,10 @@ const createProductTitlePrice = product => {
     return titlePricePlace;
 };
 
-
+/**
+ * Inject HTML division <div>
+ * @returns {HTMLElement} contentSettings
+ */
 const createContentSettings = () => {
 
     const contentSettings = document.createElement("div");
@@ -74,7 +96,11 @@ const createContentSettings = () => {
     return contentSettings;
 };
 
-
+/**
+ * Inject HTML <div> then append to it <p> and <iput>, and retrieve product form localStorage and set value of <input> to product quantity
+ * @param {Integer} rank 
+ * @returns {HTMLElement} contentSettingsQuantity
+ */
 const createContentSettingsQuantity = rank => {
 
     const contentSettingsQuantity = document.createElement("div");
@@ -100,7 +126,10 @@ const createContentSettingsQuantity = rank => {
     return contentSettingsQuantity;
 };
 
-
+/**
+ * Inject HTML <div> and append <p> to it
+ * @returns {HTMLElement} contentSettingsDelete
+ */
 const createContentSettingsDelete = () => {
 
     const contentSettingsDelete = document.createElement("div");
@@ -115,7 +144,10 @@ const createContentSettingsDelete = () => {
     return contentSettingsDelete;
 };
 
-
+/**
+ * Add the quantity of all products in localStorage to get the total quantity of all products in the cart
+ * @returns {Integer} totalQuantity
+ */
 const calculateTotalQuantity = () => {
 
     let totalQuantity = 0;
@@ -131,7 +163,10 @@ const calculateTotalQuantity = () => {
     return totalQuantity;
 };
 
-
+/**
+ * Inject text between the right HTML tags to display the total quantity of all products
+ * @returns {HTMLElement} totalQuantityPlace
+ */
 const displayTotalQuantity = () => {
 
     const totalQuantityPlace = document.getElementById("totalQuantity");
@@ -140,7 +175,10 @@ const displayTotalQuantity = () => {
     return totalQuantityPlace;
 };
 
-
+/**
+ * For each product in localStorage, multiply the quantity by the price (retrieved from the API) and then add that to the total price for all products
+ * @returns {Integer}
+ */
 const calculateTotalPrice = async () => {
 
     let totalPrice = 0;
@@ -157,7 +195,10 @@ const calculateTotalPrice = async () => {
     return totalPrice;
 };
 
-
+/**
+ * Inject text between the right HTML tags to display the total price for all products
+ * @returns {HTMLElement} totalPricePlace
+ */
 const displayTotalPrice = async () => {
 
     const totalPricePlace = document.getElementById("totalPrice");
@@ -166,7 +207,9 @@ const displayTotalPrice = async () => {
     return totalPricePlace;
 };
 
-
+/**
+ * For each product in localStorage that has a quantity different from 0, create every HTML elements needed to display product infos, and then display total quantity and total price
+ */
 const createProductInfo = async () => {
 
     for(let i = 0; i < localStorage.length; i++) {
@@ -200,11 +243,11 @@ const createProductInfo = async () => {
     await displayTotalPrice();
 };
 
-/* *
+/**
 *Find a product and its rank in localStorage from known id and quantity of product
-*@param {string} id
-*@param {interger|string} quantity
-*@return {oject} product, {interger} rank
+* @param {String} id
+* @param {Integer | String} quantity
+* @return {Array} [{Oject} product, {Interger} rank]
 */
 const findProductAndRankInStorageFromIdAndQuantity = (id, quantity) => {
 
@@ -226,14 +269,20 @@ const findProductAndRankInStorageFromIdAndQuantity = (id, quantity) => {
     return [product, rank];
 };
 
-
+/**
+ * Replace an object in localStorage by a new object but with the same rank
+ * @param {Integer} rank 
+ * @param {Object} product 
+ */
 const replaceProductInStorage = (rank, product) => {
 
     localStorage.removeItem(`Product${rank}`);
     localStorage.setItem(`Product${rank}`, JSON.stringify(product));
 };
 
-
+/**
+ * Add event listener to each quantity input of product, and when it changes, we change the quantity of the product in localStorage, and if the quantity if 0, we remove the product card from the page, and at the end, we calculate again total price and quantity
+ */
 const addEventListenerToQuantityInput = () => {
 
     const inputList = document.querySelectorAll(".itemQuantity");
@@ -265,7 +314,9 @@ const addEventListenerToQuantityInput = () => {
     };
 };
 
-
+/**
+ * Add event listener to each delete button, and when it's clicked, we change the product quantity to 0 in localStorage and remove the product card from the page, and then recalculate total price and quantity
+ */
 const addEventListenerToDeleteButton = () => {
 
     const buttonList = document.querySelectorAll("p.deleteItem");
@@ -296,7 +347,11 @@ const addEventListenerToDeleteButton = () => {
 
 //_________________________________________________________________________________
 
-
+/**
+ * Send a post request to the API that then returns what we sent as an order and an orderId
+ * @param {Array} order 
+ * @returns {Json} -object-
+ */
 const sendOrderData = order => fetch("http://localhost:3000/api/products/order", {
     method: 'POST',
 	headers: { 
@@ -315,7 +370,11 @@ let userAddress;
 let userCity;
 let userEmail;
 
-
+/**
+ * Test the first name against a regex -same functionment for the next 4 functions-
+ * @param {Strings} firstName 
+ * @returns {Boolean}
+ */
 const isFirstNameCorrect = firstName => {
 
     const regex = /^[A-ZÀÂÆÇÉÈÊËÎÏÔŒÙÛÜŸ][a-zA-ZàâæçéèêëîïôœùûüÿÀÂÆÇÉÈÊËÎÏÔŒÙÛÜŸ '-]*$/;
@@ -323,7 +382,7 @@ const isFirstNameCorrect = firstName => {
     return regex.test(firstName);
 };
 
-
+//^^^
 const isLastNameCorrect = lastName => {
 
     const regex = /^[A-ZÀÂÆÇÉÈÊËÎÏÔŒÙÛÜŸ][a-zA-ZàâæçéèêëîïôœùûüÿÀÂÆÇÉÈÊËÎÏÔŒÙÛÜŸ '-]*$/;
@@ -331,7 +390,7 @@ const isLastNameCorrect = lastName => {
     return regex.test(lastName);
 };
 
-
+//^^^
 const isAddressCorrect = address => {
 
     const regex = /^[0-9]*[a-zA-Z0-9àâæçéèêëîïôœùûüÿÀÂÆÇÉÈÊËÎÏÔŒÙÛÜŸ ,.'-]+$/;
@@ -339,7 +398,7 @@ const isAddressCorrect = address => {
     return regex.test(address);
 };
 
-
+//^^^
 const isCityCorrect = city => {
 
     const regex = /^[A-Z][a-zA-ZàâæçéèêëîïôœùûüÿÀÂÆÇÉÈÊËÎÏÔŒÙÛÜŸ '-]+$/;
@@ -347,7 +406,7 @@ const isCityCorrect = city => {
     return regex.test(city);
 };
 
-
+//^^^
 const isEmailCorrect = email => {
 
     const regex = /^.+@.+\.[a-z]+$/;
@@ -355,7 +414,9 @@ const isEmailCorrect = email => {
     return regex.test(email);
 };
 
-
+/**
+ * Add event listener to the first name field of the form, and test the input against a regex with the help of last functions, change the value of userFirstName when the input is valid and display an error message when the input isn't valid -same functionment for the next 4 functions-
+ */
 const verifyIfFirstNameIsCorrect = () => {
 
     const firstNamePlace = document.getElementById("firstName");
@@ -378,7 +439,7 @@ const verifyIfFirstNameIsCorrect = () => {
     });
 };
 
-
+//^^^
 const verifyIfLastNameIsCorrect = () => {
 
     const lastNamePlace = document.getElementById("lastName");
@@ -400,7 +461,7 @@ const verifyIfLastNameIsCorrect = () => {
     });
 };
 
-
+//^^^
 const verifyIfAddressIsCorrect = () => {
 
     const addressPlace = document.getElementById("address");
@@ -422,7 +483,7 @@ const verifyIfAddressIsCorrect = () => {
     });
 };
 
-
+//^^^
 const verifyIfCityIsCorrect = () => {
 
     const cityPlace = document.getElementById("city");
@@ -444,7 +505,7 @@ const verifyIfCityIsCorrect = () => {
     });
 };
 
-
+//^^^
 const verifyIfEmailIsCorrect = () => {
 
     const emailPlace = document.getElementById("email");
@@ -466,7 +527,9 @@ const verifyIfEmailIsCorrect = () => {
     });
 };
 
-
+/**
+ * Add every event listener with the help of the last 5 functions
+ */
 const addEventListenerToFormFields = () => {
 
     verifyIfFirstNameIsCorrect();
@@ -476,7 +539,10 @@ const addEventListenerToFormFields = () => {
     verifyIfEmailIsCorrect();
 };
 
-
+/**
+ * Retrieve the values of userFirstName/LastName/Address/City/Email and if they are not undefined or null set them as values in an object
+ * @returns {Object}
+ */
 const verifyIfFormIsCorrect = () => {
 
     if(userFirstName && userLastName && userAddress && userCity && userEmail) {
@@ -491,7 +557,12 @@ const verifyIfFormIsCorrect = () => {
     };
 };
 
-
+/**
+ * Verify if a product Id is already in the list of product Ids
+ * @param {String} productId 
+ * @param {Array} list 
+ * @returns {Boolean}
+ */
 const isProductAlreadyInList = (productId, list) => {
 
     if(list.length != 0) {
@@ -509,7 +580,10 @@ const isProductAlreadyInList = (productId, list) => {
     };
 };
 
-
+/**
+ * For each product in localStorage, if the product Id isn't already in the list and the product quantity is different from 0, add product Id to productList
+ * @returns {Array} productList
+ */
 const createProductList = () => {
 
     let productList = [];
@@ -530,7 +604,10 @@ const createProductList = () => {
     return productList;
 };
 
-
+/**
+ * Verify if the array productList created with the last function is empty
+ * @returns {Boolean}
+ */
 const isProductListEmpty = () => {
 
     const productList = createProductList();
@@ -545,7 +622,9 @@ const isProductListEmpty = () => {
     }
 };
 
-
+/**
+ * Add envent listener to order button that, when the form is correct and the product list isn't empty, sends a POST request to the API with the contact object and product list and then redirects the user to the confirmation page with the order Id returned after the POST request set in the URL, or display an alert if not everything is valid
+ */
 const addEventListenerToOrderButton = () => {
 
     const orderButton = document.getElementById("order");
@@ -580,7 +659,9 @@ const addEventListenerToOrderButton = () => {
 
 //_______________________________________________________________________________________________________
 
-
+/**
+ * Retrieve the order id from the parameter "id" in the URL and then display it through injecting text between the right HTML tags in the confirmation page
+ */
 const showOrderId = () => {
 
     const orderIdPlace = document.getElementById("orderId");
@@ -591,7 +672,9 @@ const showOrderId = () => {
     orderIdPlace.innerText = orderId;
 };
 
-
+/**
+ * Verify on which page we are through a regex test and executes the right functions acording to it; create products infos and add eventListeners to quantity inputs, form fields and and order button on the cart page, and display the order id on the confirmation page
+ */
 const main = async () => {
 
     const currentUrl = window.location.href;

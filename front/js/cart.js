@@ -8,13 +8,12 @@ const retrieveProductApi = id => fetch(`http://localhost:3000/api/products/${id}
 .catch(err => console.log('Erreur retrieveProductApi', err));
 
 /**
- * Retrieve an object from localStorage and return it as a JSON object
- * @param {Integer} rank 
- * @returns {Json} -object-
+ * Retrieve product list from localStorage
+ * @returns {Json} -array-
  */
-const retrieveProductStorage = rank => {
+ const getProductListStorage = () => {
 
-    return JSON.parse(localStorage.getItem(`Product${rank}`));
+    return JSON.parse(localStorage.getItem('ProductList'));
 };
 
 /**
@@ -67,13 +66,13 @@ const createItemContent = () => {
  * @param {Object} product 
  * @returns {HTMLElement} titlePricePlace
  */
-const createProductTitlePrice = product => {
+const createProductTitlePrice = (product, color) => {
 
     const titlePricePlace = document.createElement("div");
     titlePricePlace.classList.add("cart__item__content__titlePrice");
 
     const title = document.createElement("h2");
-    title.innerText = product.name;
+    title.innerText = product.name + ' - ' + color;
 
     const price = document.createElement("p");
     price.innerText = `${product.price} €`;
@@ -98,10 +97,10 @@ const createContentSettings = () => {
 
 /**
  * Inject HTML <div> then append to it <p> and <iput>, and retrieve product form localStorage and set value of <input> to product quantity
- * @param {Integer} rank 
+ * @param {Integer} index 
  * @returns {HTMLElement} contentSettingsQuantity
  */
-const createContentSettingsQuantity = rank => {
+const createContentSettingsQuantity = index => {
 
     const contentSettingsQuantity = document.createElement("div");
     contentSettingsQuantity.classList.add("cart__item__content__settings__quantity");
@@ -116,7 +115,8 @@ const createContentSettingsQuantity = rank => {
     quantityInput.setAttribute("min", "1");
     quantityInput.setAttribute("max", "100");
 
-    const productStorage = retrieveProductStorage(rank);
+    const productList = getProductListStorage();
+    const productStorage = productList[index];
     const productQuantity = productStorage.quantity;
 
     quantityInput.setAttribute("value", `${productQuantity}`);
@@ -151,13 +151,16 @@ const createContentSettingsDelete = () => {
 const calculateTotalQuantity = () => {
 
     let totalQuantity = 0;
+    const productList = getProductListStorage();
 
-    for(let i = 0; i < localStorage.length; i++) {
+    if(localStorage.length !== 0){
 
-        const rank = i + 1;
-        const productStorage = retrieveProductStorage(rank);
+        for(let i = 0; i < productList.length; i++) {
 
-        totalQuantity += parseInt(productStorage.quantity, 10);
+            const productStorage = productList[i];
+
+            totalQuantity += parseInt(productStorage.quantity, 10);
+        };
     };
 
     return totalQuantity;
@@ -182,14 +185,17 @@ const displayTotalQuantity = () => {
 const calculateTotalPrice = async () => {
 
     let totalPrice = 0;
+    const productList = getProductListStorage();
 
-    for(let i = 0; i < localStorage.length; i++) {
+    if(localStorage.length !== 0) {
 
-        const rank = i + 1;
-        const productStorage = retrieveProductStorage(rank);
-        const product = await retrieveProductApi(productStorage.id);
+        for(let i = 0; i < productList.length; i++) {
 
-        totalPrice += parseInt(productStorage.quantity, 10) * parseFloat(product.price);
+            const productStorage = productList[i];
+            const product = await retrieveProductApi(productStorage.id);
+
+            totalPrice += parseInt(productStorage.quantity, 10) * parseFloat(product.price);
+        };
     };
 
     return totalPrice;
@@ -212,72 +218,73 @@ const displayTotalPrice = async () => {
  */
 const createProductInfo = async () => {
 
-    for(let i = 0; i < localStorage.length; i++) {
+    if(localStorage.length !== 0){ 
 
-        const rank = i + 1;
-        const productStorage = retrieveProductStorage(rank);
-        const product = await retrieveProductApi(productStorage.id);
+        const productList = getProductListStorage();
 
-        if(productStorage.quantity != 0){ 
+        for(let i = 0; i < productList.length; i++) {
 
-            const cartItemPlace = document.getElementById("cart__items");
-            const productCard = createProductCard(product);
-            const productImage = createProductImg(product);
-            const itemContent = createItemContent();
-            const titlePrice = createProductTitlePrice(product);
-            const contentSettings = createContentSettings();
-            const contentSettingsQuantity = createContentSettingsQuantity(rank);
-            const contentSettingsDelete = createContentSettingsDelete();
+            const productStorage = productList[i];
+            const product = await retrieveProductApi(productStorage.id);
 
-            cartItemPlace.appendChild(productCard);
-            productCard.appendChild(productImage);
-            productCard.appendChild(itemContent);
-            itemContent.appendChild(titlePrice);
-            itemContent.appendChild(contentSettings);
-            contentSettings.appendChild(contentSettingsQuantity);
-            contentSettingsQuantity.appendChild(contentSettingsDelete);
+            if(productStorage.quantity != 0){ 
+
+                const cartItemPlace = document.getElementById("cart__items");
+                const productCard = createProductCard(product);
+                const productImage = createProductImg(product);
+                const itemContent = createItemContent();
+                const titlePrice = createProductTitlePrice(product, productStorage.color);
+                const contentSettings = createContentSettings();
+                const contentSettingsQuantity = createContentSettingsQuantity(i);
+                const contentSettingsDelete = createContentSettingsDelete();
+
+                cartItemPlace.appendChild(productCard);
+                productCard.appendChild(productImage);
+                productCard.appendChild(itemContent);
+                itemContent.appendChild(titlePrice);
+                itemContent.appendChild(contentSettings);
+                contentSettings.appendChild(contentSettingsQuantity);
+                contentSettingsQuantity.appendChild(contentSettingsDelete);
+            };
         };
-    };
 
-    displayTotalQuantity();
-    await displayTotalPrice();
+        displayTotalQuantity();
+        await displayTotalPrice();
+    };
 };
 
 /**
-*Find a product and its rank in localStorage from known id and quantity of product
+*Find a product and its index in localStorage from known id and color of product
 * @param {String} id
-* @param {Integer | String} quantity
-* @return {Array} [{Oject} product, {Interger} rank]
+* @param {String} color
+* @return {Integer} index
 */
-const findProductAndRankInStorageFromIdAndQuantity = (id, quantity) => {
+const findProductIndexInStorageFromIdAndColor = (id, color) => {
 
-    let product;
-    let rank;
+    let index;
+    const productList = getProductListStorage();
 
-    for(let i = 0; i < localStorage.length; i++) {
+    for(let i = 0; i < productList.length; i++) {
 
-        const productRank = i + 1;
-        const productStorage = retrieveProductStorage(productRank);
+        const productStorage = productList[i];
 
-        if(id == productStorage.id && quantity == productStorage.quantity){
+        if(id == productStorage.id && color == productStorage.color){
 
-            product = productStorage;
-            rank = productRank;
+            index = i;
         };
     };
 
-    return [product, rank];
+    return index;
 };
 
 /**
- * Replace an object in localStorage by a new object but with the same rank
- * @param {Integer} rank 
- * @param {Object} product 
+ * Replace ProductList in localStorage by a modified ProductList
+ * @param {Object} newList 
  */
-const replaceProductInStorage = (rank, product) => {
+ const changeProductListInStorage = (newList) => {
 
-    localStorage.removeItem(`Product${rank}`);
-    localStorage.setItem(`Product${rank}`, JSON.stringify(product));
+    localStorage.removeItem('ProductList');
+    localStorage.setItem('ProductList', JSON.stringify(newList));
 };
 
 /**
@@ -289,23 +296,29 @@ const addEventListenerToQuantityInput = () => {
 
     for(let input of inputList) {
 
-        const productArticle = input.closest("article.cart__item");
-        const quantityOfProduct = input.value;
-        const productId = productArticle.dataset.id;
-        const product = findProductAndRankInStorageFromIdAndQuantity(productId, quantityOfProduct)[0];
-        const rank = findProductAndRankInStorageFromIdAndQuantity(productId, quantityOfProduct)[1];
-
         input.addEventListener("change", async (e) => {
 
+            const productArticle = input.closest("article.cart__item");
+            const productId = productArticle.dataset.id;
+            const productTitle = productArticle.querySelector(".cart__item__content>.cart__item__content__titlePrice>h2").innerText;
+            const productColor = productTitle.split(" - ")[1];
+            const index = findProductIndexInStorageFromIdAndColor(productId, productColor);
+            const productList = getProductListStorage();
             const newQuantity = e.target.value;
-
-            product.quantity = newQuantity;
-
-            replaceProductInStorage(rank, product);
 
             if (newQuantity == 0) {
 
+                productList.splice(index, 1);
+
                 productArticle.remove();
+
+                changeProductListInStorage(productList);
+        
+            } else {
+
+                productList[index].quantity = newQuantity;
+
+                changeProductListInStorage(productList);
             };
 
             displayTotalQuantity();
@@ -323,18 +336,18 @@ const addEventListenerToDeleteButton = () => {
 
     for(let button of buttonList) {
 
-        const productArticle = button.closest("article.cart__item");
-        const quantityInput = productArticle.querySelector("input.itemQuantity")
-        const quantityOfProduct = quantityInput.value;
-        const productId = productArticle.dataset.id;
-        const product = findProductAndRankInStorageFromIdAndQuantity(productId, quantityOfProduct)[0];
-        const rank = findProductAndRankInStorageFromIdAndQuantity(productId, quantityOfProduct)[1];
-
         button.addEventListener("click", async () => {
 
-            product.quantity = 0;
+            const productArticle = button.closest("article.cart__item");
+            const productTitle = productArticle.querySelector(".cart__item__content>.cart__item__content__titlePrice>h2").innerText;
+            const productColor = productTitle.split(" - ")[1];
+            const productId = productArticle.dataset.id;
+            const index = findProductIndexInStorageFromIdAndColor(productId, productColor);
+            const productList = getProductListStorage();
 
-            replaceProductInStorage(rank, product);
+            productList.splice(index, 1);
+
+            changeProductListInStorage(productList);
 
             productArticle.remove();
 
@@ -587,11 +600,11 @@ const isProductAlreadyInList = (productId, list) => {
 const createProductList = () => {
 
     let productList = [];
+    const listStorage = getProductListStorage();
 
-    for(i = 0; i < localStorage.length; i++) {
+    for(i = 0; i < listStorage.length; i++) {
 
-        const rank = i + 1;
-        const product = retrieveProductStorage(rank);
+        const product = listStorage[i];
         const productQuantity = product.quantity;
         const productId = product.id;
 

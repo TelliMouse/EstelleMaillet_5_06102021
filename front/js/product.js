@@ -136,7 +136,16 @@ const createProductInfo = product => {
 
 
 let productColor;
-let productQuantity;
+let productQuantity = "1";
+
+/**
+ * Retrieve product list from localStorage
+ * @returns {Json} -array-
+ */
+const getProductListStorage = () => {
+
+    return JSON.parse(localStorage.getItem('ProductList'));
+};
 
 /**
  * Create an object that contains the informations needed to be sent to localStorage when a product is added to the cart
@@ -162,7 +171,7 @@ const isTheProductComplete = async () => {
 
     const product = await getCurrentProduct();
 
-    if(product.id && product.color && product.quantity !== 0) {
+    if(product.id && product.color && product.quantity && product.quantity != 0) {
 
         return true;
 
@@ -175,50 +184,43 @@ const isTheProductComplete = async () => {
 /**
  * If the current product (id and color) is already in localStorage, we find its rank
  * @param {Object} product 
- * @returns {Integer} productRank
+ * @returns {Integer} i
  */
-const findTheRankOfTheProductInStorage = product => {
+const findTheIndexOfTheProductInStorage = product => {
 
-    for( let i = 0; i < localStorage.length; i++){
+    if(localStorage.length !== 0){
 
-        const productRank = i + 1;
-        const productInStorage = localStorage.getItem(`Product${productRank}`);
-        const productInStorageJson = JSON.parse(productInStorage);
+        const productList = getProductListStorage();
 
-        if(product.id == productInStorageJson.id && product.color == productInStorageJson.color) {
+        for( let i = 0; i < productList.length; i++){
+
+        const productInStorage = productList[i];
+
+            if(product.id == productInStorage.id && product.color == productInStorage.color) {
             
-            return productRank;
+                return i;
+            };
         };
     };
 };
 
 /**
- * Find if the current object is in the cart/localStorage and if it is, return its rank in localStorage
+ * Find if the current object is in the cart/localStorage and if it is, return its index
  * @param {Object} product 
- * @returns {Integer | Boolean} rank | false
+ * @returns {Integer | Boolean} index | false
  */
-const isTheProductAlreadyInTheCartAndWhatIsTheRank = product => {
+const isTheProductAlreadyInTheCartAndWhatIsTheIndex = product => {
 
     if(localStorage.length !== 0) {
 
-        const rank = findTheRankOfTheProductInStorage(product);
+        const index = findTheIndexOfTheProductInStorage(product);
 
-        return rank;
+        return index;
 
     } else {
 
         return false;
     };
-};
-
-/**
- * Transform item from localStorage into JSON
- * @param {Integer} rank 
- * @returns {Json} -object-
- */
-const getProductJsonFromStorage = rank => {
-
-    return JSON.parse(localStorage.getItem(`Product${rank}`));
 };
 
 /**
@@ -233,14 +235,13 @@ const addNumbersFromString = (string1, string2) => {
 };
 
 /**
- * Replace an object in localStorage by another object but with the same name/rank
- * @param {Integer} rank 
- * @param {Object} newObject 
+ * Replace ProductList in localStorage by a modified ProductList
+ * @param {Object} newList 
  */
-const replaceObjectFromStorage = (rank, newObject) => {
+const changeProductListInStorage = (newList) => {
 
-    localStorage.removeItem(`Product${rank}`);
-    localStorage.setItem(`Product${rank}`, JSON.stringify(newObject));
+    localStorage.removeItem('ProductList');
+    localStorage.setItem('ProductList', JSON.stringify(newList));
 };
 
 /**
@@ -249,13 +250,17 @@ const replaceObjectFromStorage = (rank, newObject) => {
  */
 const increaseQuantityOfProductInCart = product => {
 
-    const productRank = isTheProductAlreadyInTheCartAndWhatIsTheRank(product);
-    const productInStorage = getProductJsonFromStorage(productRank);
-    const newQuantity = addNumbersFromString(productInStorage.quantity, productQuantity);
+    if(localStorage.length !== 0){
 
-    productInStorage.quantity = newQuantity;
+        const productList = getProductListStorage();
+        const productIndex = isTheProductAlreadyInTheCartAndWhatIsTheIndex(product);
+        const productInStorage = productList[productIndex];
+        const newQuantity = addNumbersFromString(productInStorage.quantity, productQuantity);
 
-    replaceObjectFromStorage(productRank, productInStorage);
+        productInStorage.quantity = newQuantity;
+
+        changeProductListInStorage(productList);
+    };
 };
 
 /**
@@ -264,10 +269,21 @@ const increaseQuantityOfProductInCart = product => {
  */
 const addNewProductToCart = product => {
 
-    const productRank = localStorage.length + 1;
-    const productLinea = JSON.stringify(product);
+    if(localStorage.length === 0){
 
-    localStorage.setItem(`Product${productRank}`, productLinea);
+        const productList = [product];
+        const productListLinea = JSON.stringify(productList);
+
+        localStorage.setItem('ProductList', productListLinea);
+
+    } else {
+
+        const productList = getProductListStorage();
+    
+        productList.push(product);
+
+        changeProductListInStorage(productList);
+    };    
 };
 
 /**
@@ -279,7 +295,7 @@ const putProductInCart = async () => {
 
     if(await isTheProductComplete()) {
 
-        if(isTheProductAlreadyInTheCartAndWhatIsTheRank(product)) {
+        if(isTheProductAlreadyInTheCartAndWhatIsTheIndex(product) >= 0 && localStorage.length !== 0) {
 
             increaseQuantityOfProductInCart(product);
             alert('Produit ajouté au panier.');
